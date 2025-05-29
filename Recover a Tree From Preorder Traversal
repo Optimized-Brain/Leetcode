@@ -1,0 +1,54 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* recoverFromPreorder(string traversal) {
+        int pos = 0;
+        return recover(traversal, pos, 0);
+    }
+    
+private:
+    // Helper function: 'depth' is the expected depth for the current node.
+    TreeNode* recover(const string &s, int &pos, int depth) {
+        int n = s.size();
+        int start = pos;
+        int dashCount = 0;
+        
+        // Count the dashes to determine the depth.
+        while(pos < n && s[pos] == '-') {
+            dashCount++;
+            pos++;
+        }
+        
+        // If the count of dashes doesn't match the expected depth, rollback and return NULL.
+        if(dashCount != depth) {
+            pos = start;
+            return nullptr;
+        }
+        
+        // Read the integer value.
+        int num = 0;
+        while(pos < n && isdigit(s[pos])) {
+            num = num * 10 + (s[pos] - '0');
+            pos++;
+        }
+        
+        // Create the new node.
+        TreeNode* node = new TreeNode(num);
+        
+        // Recursively construct left and right subtrees.
+        node->left = recover(s, pos, depth + 1);
+        node->right = recover(s, pos, depth + 1);
+        
+        return node;
+    }
+};
