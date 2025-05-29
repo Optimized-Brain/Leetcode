@@ -1,0 +1,57 @@
+#include <vector>
+#include <algorithm>
+using namespace std;
+class Solution {
+public:
+    int lenOfVDiagonal(vector<vector<int>>& g) {
+        int n = g.size(), m = g[0].size();
+        vector<vector<vector<vector<int>>>> dp(4, vector<vector<vector<int>>>(3, vector<vector<int>>(n, vector<int>(m, 0))));
+        int dr[4] = {1, 1, -1, -1}, dc[4] = {1, -1, -1, 1};
+        auto nxt = [&](int x) { return x == 1 ? 2 : (x == 2 ? 0 : 2); };
+        for (int d = 0; d < 4; d++) {
+            if (d == 0) {
+                for (int i = n - 1; i >= 0; i--)
+                    for (int j = m - 1; j >= 0; j--)
+                        for (int x = 0; x < 3; x++)
+                            dp[d][x][i][j] = (g[i][j] == x) ? 1 + ((i + dr[d] < n && j + dc[d] < m) ? dp[d][nxt(x)][i + dr[d]][j + dc[d]] : 0) : 0;
+            } else if (d == 1) {
+                for (int i = n - 1; i >= 0; i--)
+                    for (int j = 0; j < m; j++)
+                        for (int x = 0; x < 3; x++)
+                            dp[d][x][i][j] = (g[i][j] == x) ? 1 + ((i + dr[d] < n && j + dc[d] >= 0) ? dp[d][nxt(x)][i + dr[d]][j + dc[d]] : 0) : 0;
+            } else if (d == 2) {
+                for (int i = 0; i < n; i++)
+                    for (int j = 0; j < m; j++)
+                        for (int x = 0; x < 3; x++)
+                            dp[d][x][i][j] = (g[i][j] == x) ? 1 + ((i + dr[d] >= 0 && j + dc[d] >= 0) ? dp[d][nxt(x)][i + dr[d]][j + dc[d]] : 0) : 0;
+            } else {
+                for (int i = 0; i < n; i++)
+                    for (int j = m - 1; j >= 0; j--)
+                        for (int x = 0; x < 3; x++)
+                            dp[d][x][i][j] = (g[i][j] == x) ? 1 + ((i + dr[d] >= 0 && j + dc[d] < m) ? dp[d][nxt(x)][i + dr[d]][j + dc[d]] : 0) : 0;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (g[i][j] != 1) continue;
+                for (int d = 0; d < 4; d++) {
+                    int l = dp[d][1][i][j];
+                    ans = max(ans, l);
+                    int d2 = (d + 1) % 4;
+                    int r = i, c = j;
+                    for (int k = 0; k < l; k++) {
+                        int nr = r + dr[d2], nc = c + dc[d2];
+                        int exp = ((k + 1) & 1) ? 2 : 0;
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < m)
+                            ans = max(ans, k + 1 + dp[d2][exp][nr][nc]);
+                        r += dr[d];
+                        c += dc[d];
+                        if (r < 0 || r >= n || c < 0 || c >= m) break;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};
