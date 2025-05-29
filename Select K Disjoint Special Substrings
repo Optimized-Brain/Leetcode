@@ -1,0 +1,59 @@
+#include <string>
+#include <algorithm>
+using namespace std;
+class Solution {
+public:
+    bool maxSubstringLength(string s, int k) {
+        int n = s.size();
+        if(k == 0) return true;
+        int first[26], last[26];
+        for(int i = 0; i < 26; i++){
+            first[i] = -1;
+            last[i] = -1;
+        }
+        for(int i = 0; i < n; i++){
+            int idx = s[i] - 'a';
+            if(first[idx] == -1) first[idx] = i;
+            last[idx] = i;
+        }
+        int candStart[100], candEnd[100], candCount = 0;
+        for(int i = 0; i < n; i++){
+            int idx = s[i] - 'a';
+            if(i != first[idx]) continue;
+            int st = i, ed = last[idx];
+            int j = st;
+            bool valid = true;
+            while(j <= ed){
+                int id = s[j] - 'a';
+                if(first[id] < st) { valid = false; break; }
+                if(last[id] > ed) ed = last[id];
+                j++;
+            }
+            if(valid && !(st == 0 && ed == n - 1)){
+                candStart[candCount] = st;
+                candEnd[candCount] = ed;
+                candCount++;
+            }
+        }
+        for(int i = 0; i < candCount; i++){
+            for(int j = i + 1; j < candCount; j++){
+                if(candEnd[j] < candEnd[i]){
+                    int tmp = candEnd[i];
+                    candEnd[i] = candEnd[j];
+                    candEnd[j] = tmp;
+                    tmp = candStart[i];
+                    candStart[i] = candStart[j];
+                    candStart[j] = tmp;
+                }
+            }
+        }
+        int count = 0, lastEnd = -1;
+        for(int i = 0; i < candCount; i++){
+            if(candStart[i] > lastEnd){
+                count++;
+                lastEnd = candEnd[i];
+            }
+        }
+        return count >= k;
+    }
+};
