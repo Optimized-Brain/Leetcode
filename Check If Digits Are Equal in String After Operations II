@@ -1,0 +1,48 @@
+#include <string>
+using namespace std;
+  
+class Solution {
+public:
+    int modInv(int x) {
+        if(x==1)return 1;
+        if(x==3)return 7;
+        if(x==7)return 3;
+        if(x==9)return 9;
+        return 0;
+    }
+    int modPow2(int exp) {
+        if(exp<=0)return 1;
+        int r = exp % 4;
+        if(r==0) r = 4;
+        if(r==1)return 2;
+        if(r==2)return 4;
+        if(r==3)return 8;
+        return 6;
+    }
+    int modPow5(int exp) {
+        return exp > 0 ? 5 : 1;
+    }
+    bool hasSameDigits(string s) {
+        string midStr = s;
+        int L = midStr.size(), N = L - 2;
+        int X = midStr[0] - '0', Y = midStr[1] - '0';
+        int dp0 = 1, count2 = 0, count5 = 0;
+        for (int j = 1; j <= N; j++) {
+            int factor = N - j + 1;
+            while (factor % 2 == 0) { factor /= 2; count2++; }
+            while (factor % 5 == 0) { factor /= 5; count5++; }
+            dp0 = (dp0 * (factor % 10)) % 10;
+            int d = j;
+            while (d % 2 == 0) { d /= 2; count2--; }
+            while (d % 5 == 0) { d /= 5; count5--; }
+            dp0 = (dp0 * modInv(d % 10)) % 10;
+            int extra = (modPow2(count2) * modPow5(count5)) % 10;
+            int cur = (dp0 * extra) % 10;
+            int digit1 = midStr[j] - '0';
+            int digit2 = midStr[j + 1] - '0';
+            X = (X + cur * digit1) % 10;
+            Y = (Y + cur * digit2) % 10;
+        }
+        return X == Y;
+    }
+};
