@@ -1,0 +1,52 @@
+class MyCircularDeque {
+public:
+    int* arr;
+    int capacity;
+    int front;
+    int rear;
+    MyCircularDeque(int k) {
+        capacity = k + 1;
+        arr = new int[capacity];
+        front = 0;
+        rear = 0;
+    }
+    bool insertFront(int value) {
+        if ((rear + 1) % capacity == front) return false;
+        front = (front - 1 + capacity) % capacity;
+        arr[front] = value;
+        return true;
+    }
+    bool insertLast(int value) {
+        if ((rear + 1) % capacity == front) return false;
+        arr[rear] = value;
+        rear = (rear + 1) % capacity;
+        return true;
+    }
+    bool deleteFront() {
+        if (front == rear) return false;
+        front = (front + 1) % capacity;
+        return true;
+    }
+    bool deleteLast() {
+        if (front == rear) return false;
+        rear = (rear - 1 + capacity) % capacity;
+        return true;
+    }
+    int getFront() {
+        if (front == rear) return -1;
+        return arr[front];
+    }
+    int getRear() {
+        if (front == rear) return -1;
+        return arr[(rear - 1 + capacity) % capacity];
+    }
+    bool isEmpty() {
+        return front == rear;
+    }
+    bool isFull() {
+        return (rear + 1) % capacity == front;
+    }
+    ~MyCircularDeque() {
+        delete[] arr;
+    }
+};
