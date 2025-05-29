@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+class Solution {
+public:
+    int maxCoins(vector<int>& nums) {
+        int n = nums.size();
+        int a[305];
+        a[0] = 1;
+        a[n+1] = 1;
+        for(int i = 0; i < n; i++) a[i+1] = nums[i];
+        int m = n + 2;
+        int dp[305][305];
+        memset(dp, 0, sizeof(dp));
+        for(int i = m - 2; i >= 0; i--){
+            for(int j = i + 1; j < m; j++){
+                for(int k = i + 1; k < j; k++){
+                    dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + a[i] * a[k] * a[j]);
+                }
+            }
+        }
+        return dp[0][m - 1];
+    }
+};
