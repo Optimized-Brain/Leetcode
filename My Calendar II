@@ -1,0 +1,24 @@
+class MyCalendarTwo {
+public:
+    int sStart[1000], sEnd[1000], sCount;
+    int dStart[1000], dEnd[1000], dCount;
+    MyCalendarTwo(): sCount(0), dCount(0) {}
+    bool book(int start, int end) {
+        for (int i = 0; i < dCount; i++) {
+            if (!(end <= dStart[i] || start >= dEnd[i])) return false;
+        }
+        for (int i = 0; i < sCount; i++) {
+            if (!(end <= sStart[i] || start >= sEnd[i])) {
+                int ns = start > sStart[i] ? start : sStart[i];
+                int ne = end < sEnd[i] ? end : sEnd[i];
+                dStart[dCount] = ns;
+                dEnd[dCount] = ne;
+                dCount++;
+            }
+        }
+        sStart[sCount] = start;
+        sEnd[sCount] = end;
+        sCount++;
+        return true;
+    }
+};
